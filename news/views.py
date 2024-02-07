@@ -1,3 +1,6 @@
+from django.views.generic import ListView, DetailView
+from .models import Post
+
 class PostsList(ListView):
     # Указываем модель, объекты которой мы будем выводить
     model = Post
