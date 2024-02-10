@@ -1,12 +1,43 @@
 <!--  наследуемся от шаблона default.html, который мы создавали для flatpages -->
 {% extends 'flatpages/default.html' %}
-
-<!-- Название у нас будет Product -->
+{% load custom_filters %}
+<!-- Название у нас будет products -->
 {% block title %}
 Post
 {% endblock title %}
 
-<!-- В контенте на странице мы выводим сам товар, идентификатор которого был передан в url -->
+<!-- В контенте на странице мы выводим все товары -->
 {% block content %}
-<h1>{{ post }}</h1>
+    <h1>Статья</h1>
+    <h3>{{ time_now|date:'d M Y' }}</h3>
+<!--    {{ posts }}-->
+    <hr>
+   {% if posts %}
+       <table>
+           <tr>
+               <td>Заголовок</td>
+               <td>Автор</td>
+               <td>Тип</td>
+               <td>Дата</td>
+               <td>Текст</td>
+               <td>Категория</td>
+               <td>Рейтинг</td>
+           </tr>
+
+
+           <tr>
+               <td>{{ posts.title|censor }}</td>
+               <td>{{ posts.author}}</td>
+               <td>{{ posts.type}}</td>
+               <td>{{ posts.time_in|date:'d M Y' }}</td>
+               <td>{{ posts.text|censor}}</td>
+               <td>{{ posts.category}}</td>
+               <td>{{ posts.rating}}</td>
+
+           </tr>
+
+       </table>
+
+   {% endif %}
+
 {% endblock content %}

@@ -17,13 +17,16 @@ class Author(models.Model):
     def update_rating(self):
         post_rating = Post.objects.filter(author=self).aggregate(pr=Coalesce(Sum('rating'), 0))['pr']
         comments_rating = Comment.objects.filter(user=self.user).aggregate(cr=Coalesce(Sum('rating'), 0))['cr']
-        post_comments_rating = Comment.objects.filter(post__author=self).aggregate(pcr=Coalesce(Sum('rating'), 0))['pcr']
+        post_comments_rating = Comment.objects.filter(post_id__author=self).aggregate(pcr=Coalesce(Sum('rating'), 0))[
+            'pcr']
 
-        print(f'Рейтинг постов  -{post_rating}, \n '
-              f'Рейтинг комментариев автора -{comments_rating}, \n'
-              f' Рейтинг комментариев постов автора -{post_comments_rating}')
         self.rating = post_rating * 3 + comments_rating + post_comments_rating
         self.save()
+
+        print(f' Рейтинг постов  - {post_rating}, \n '
+              f'Рейтинг комментариев автора - {comments_rating}, \n'
+              f' Рейтинг комментариев постов автора - {post_comments_rating}, \n'
+              f' Общий рейтинг - {self.rating} ')
 
 
 # Модель Category
@@ -54,11 +57,11 @@ class Post(models.Model):
     # Методы like() и dislike() в моделях Comment и Post, которые увеличивают/уменьшают рейтинг на единицу.
     def like(self):
         self.rating += 1
-        return self.rating
+        self.save()
 
     def dislike(self):
         self.rating -= 1
-        return self.rating
+        self.save()
 
     # Метод preview() модели Post, который возвращает
     # начало статьи (предварительный просмотр) длиной 124 символа и добавляет многоточие в конце.
@@ -85,8 +88,8 @@ class Comment(models.Model):
 
     def like(self):
         self.rating += 1
-        return self.rating
+        self.save()
 
     def dislike(self):
         self.rating -= 1
-        return self.rating
+        self.save()
