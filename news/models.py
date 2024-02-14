@@ -3,6 +3,8 @@ from django.contrib.auth.models import User
 from django.db.models import Sum
 from django.db.models.functions import Coalesce
 
+from django.core.validators import MinValueValidator
+from django.urls import reverse
 
 # Модель Author
 class Author(models.Model):
@@ -47,10 +49,13 @@ POSITIONS = [
 
 class Post(models.Model):
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
-    type = models.CharField(max_length=20, choices=POSITIONS, default=2)
+    type = models.CharField(max_length=20, choices=POSITIONS, default='Новость')
     time_in = models.DateTimeField(auto_now_add=True)
     category = models.ManyToManyField(Category, through='PostCategory')
-    title = models.CharField(max_length=255)
+    title = models.CharField(
+        max_length=255,
+        unique=True,
+    )
     text = models.TextField()
     rating = models.IntegerField(default=0)
 
@@ -71,6 +76,8 @@ class Post(models.Model):
     def preview(self):
         return f'{self.text[:123]}...'
 
+    def get_absolute_url(self):
+        return reverse('post', args=[str(self.id)])
 
 # Модель PostCategory
 class PostCategory(models.Model):
