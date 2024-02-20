@@ -9,7 +9,7 @@ from .models import Post
 from .forms import PostForm
 from datetime import datetime
 from .filters import PostFilter
-
+from django.contrib.auth.mixins import PermissionRequiredMixin
 class PostsList(ListView):
     # Указываем модель, объекты которой мы будем выводить
     # model = Post
@@ -100,3 +100,9 @@ class PostDelete(DeleteView):
     model = Post
     template_name = 'post_delete.html'
     success_url = reverse_lazy('posts')
+
+class AddPost(PermissionRequiredMixin, PostCreate):
+    permission_required = ('news.add_post',)
+
+class ChangePost(PermissionRequiredMixin, PostUpdate):
+    permission_required = ('news.change_post')
